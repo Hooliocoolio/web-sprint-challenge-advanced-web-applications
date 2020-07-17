@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
+import { getToken } from './utils/auth';
 
 import Login from "./components/Login";
 import "./styles.scss";
