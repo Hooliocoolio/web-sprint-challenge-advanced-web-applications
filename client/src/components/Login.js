@@ -1,59 +1,62 @@
 import React, {useState} from 'react';
-import { axiosWithAuth } from '../utils/auth';
+import axios from 'axios';
+import {useHistory} from 'react-router-dom';
 
-const Login = (props) => {
-  const [ err, setErr ] = useState()
-  const [ data, setData ] = useState({
-    username:'',
-    password:''
-  })
+const LoginForm = (props) => {
 
-  const handleChange = e => {
-    setData({
-      ...data,
-      [e.target.name]: e.target.value
-    })
-  }
-  // make a post request to retrieve a token from the api
-    const handleSubmit = e => {
-      e.preventDefault()
-      axiosWithAuth().post('/api/login', data)
-        .then(res => {
-          localStorage.setItem('token', res.data.payload)
-          props.history.push('/bubbles')
+    const [credentials, setCredentials] = useState({username: '', password: ''});
+    const {push} = useHistory();
+    const login = event => {
+        // console.log('login event');
+        event.preventDefault();
+        console.log('posting the following credentials: ', {credentials});
+        // 
+        axios
+        .post('http://localhost:5000/api/login', credentials)
+        .then(response => {
+            console.log('response value: ', response);
+            localStorage.setItem('token', response.data.payload);
+            
+
+            // to redirect to list of friends
+             push('/bubbles');
         })
-        .catch(err => {
-          setErr(err.response.data.message)
-        })
-
+        .catch(error => {
+            console.log(error);
+        }
+        )
+      
+      
     }
-  // when you have handled the token, navigate to the BubblePage route
-  return (
-    <div className='login-form'>
+
+    const handleChange = event => {
+        // console.log('handlechange event');
+        setCredentials({...credentials, [event.target.name]: event.target.value}
+            );
+       
+    }
+
+    return (
+      <div>
       <h1>Welcome to the Bubble App!</h1>
-      <hr /> 
-      <form onSubmit={handleSubmit}>
-        <input
-          type='text'
-          name='username'
-          placeholder='Enter Username'
-          value={data.username}
-          onChange={handleChange}
-          />
-          <br />
-        <input 
-          type='password'
-          name='password'
-          placeholder='Enter Password'
-          value={data.password}
-          onChange={handleChange}
-          />
-          <br />
-          <button type='submit'>Login</button>
+      
+        <form onSubmit={login}>
+            <h3>
+                Login
+            </h3>
 
-      </form>
-    </div>
-  );
-};
+            <input
+                type = 'text' name = 'username' placeholder = 'username' value = {credentials.username} onChange = {handleChange} 
+            />
+            <input
+                type = 'password' name = 'password' placeholder = 'password' value = {credentials.password} onChange = {handleChange} 
+            />
 
-export default Login;
+        
+            <button> log in </button>
+        </form>
+        </div>
+    )
+}
+
+export default LoginForm;
