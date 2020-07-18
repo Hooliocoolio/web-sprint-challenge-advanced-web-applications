@@ -15,3 +15,5 @@ function ProtectedRoute(props){
             }} />
         )
     }
+
+    export default ProtectedRoute;
